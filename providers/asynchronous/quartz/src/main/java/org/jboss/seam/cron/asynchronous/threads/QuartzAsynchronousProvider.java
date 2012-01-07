@@ -94,17 +94,20 @@ public class QuartzAsynchronousProvider implements CronProviderLifecycle, CronAs
         }
     }
 
-    public void executeWithoutReturn(final String queueId, final Invoker inkover) {
-        executeMethodAsScheduledJob(inkover);
+    public void executeWithoutReturn(final String queueId, final boolean persistent, final Invoker inkover) {
+        executeMethodAsScheduledJob(persistent, inkover);
     }
 
-    public Future executeAndReturnFuture(final String queueId, final Invoker invoker) {
-        FutureTask asyncResult = new FutureTask(executeMethodAsScheduledJob(invoker));
+    public Future executeAndReturnFuture(final String queueId, final boolean persistent, final Invoker invoker) {
+        FutureTask asyncResult = new FutureTask(executeMethodAsScheduledJob(persistent, invoker));
         new Thread(asyncResult).start();
         return asyncResult;
     }
 
-    private FutureInvokerSupport executeMethodAsScheduledJob(final Invoker invoker) throws AsynchronousMethodInvocationException {
+    private FutureInvokerSupport executeMethodAsScheduledJob(final boolean persistent, final Invoker invoker) throws AsynchronousMethodInvocationException {
+        if (persistent)
+            throw new CronProviderInitialisationException("Persistence not supported for QuartzAsynchronousProvider");
+
         final FutureInvokerSupport drs = new FutureInvokerSupport(invoker);
         try {
             final String name = UUID.randomUUID().toString();

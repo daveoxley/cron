@@ -17,6 +17,7 @@
 package org.jboss.seam.cron.util;
 
 import java.lang.annotation.Annotation;
+import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -60,4 +61,19 @@ public class CdiUtils {
         }
     }
 
+    /**
+     * Utility method to retrieve the bean class from a bean instance.
+     * 
+     * @param manager the BeanManager to use to access the managed instance
+     * @param instance the Bean instance
+     */
+    public static Class<?> getBeanClass(final BeanManager manager, final Object instance) {
+        Class<?> beanClass = instance.getClass();
+        Set<Bean<?>> beans;
+        do {
+            beans = manager.getBeans(beanClass);
+        } while (beans.isEmpty() && (beanClass = beanClass.getSuperclass()) != null);
+        final Bean<?> bean = manager.resolve(beans);
+        return bean.getBeanClass();
+    }
 }

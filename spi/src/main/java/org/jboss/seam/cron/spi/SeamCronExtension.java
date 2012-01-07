@@ -72,17 +72,17 @@ public class SeamCronExtension implements Extension {
             cronQueueInstaller.initProviderQueue(manager, queueProvider, allObservers);
         }
         // process scheduling observers if scheduling provider exists
+        final CronAsynchronousProvider asyncProvider = CdiUtils.getInstanceByType(manager, CronAsynchronousProvider.class);
+        if (asyncProvider != null) {
+            this.asynchronousProvider = asyncProvider;
+            handleLifecycleInit(asyncProvider);
+        }
+        // process scheduling observers if scheduling provider exists
         final CronSchedulingProvider schedProvider = CdiUtils.getInstanceByType(manager, CronSchedulingProvider.class);
         if (schedProvider != null) {
             this.schedulingProvider = schedProvider;
             handleLifecycleInit(schedProvider);
             cronSchedInstaller.initProviderScheduling(manager, schedProvider, allObservers);
-        }
-        // process scheduling observers if scheduling provider exists
-        final CronAsynchronousProvider asyncProvider = CdiUtils.getInstanceByType(manager, CronAsynchronousProvider.class);
-        if (asyncProvider != null) {
-            this.asynchronousProvider = asyncProvider;
-            handleLifecycleInit(asyncProvider);
         }
 
 // TODO: (PR): If there's an asynch provider present, check if the interceptor is enabled. See https://jira.jboss.org/jira/browse/WELDX-91

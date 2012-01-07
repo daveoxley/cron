@@ -16,9 +16,10 @@
  */
 package org.jboss.seam.cron.spi.queue;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Set;
+import org.jboss.seam.cron.impl.scheduling.exception.CronProviderInitialisationException;
 
 /**
  * Contains the details necessary for the queue provider to call a concurrency
@@ -26,17 +27,17 @@ import java.util.Set;
  * 
  * @author Dave Oxley
  */
-public class RestrictDetail {
+public class RestrictDetail implements Serializable {
 
     private final Class<?> beanClass;
-    private final Method method;
-    private final Set<Annotation> bindings;
+    private final String methodName;
+    private final Class<?>[] parameterTypes;
     private final String queueId;
 
-    public RestrictDetail(final Class<?> beanClass, final Method method, Set<Annotation> bindings, final String queueId) {
+    public RestrictDetail(final Class<?> beanClass, final Method method, final String queueId) {
         this.beanClass = beanClass;
-        this.method = method;
-        this.bindings = bindings;
+        this.methodName = method.getName();
+        this.parameterTypes = method.getParameterTypes();
         this.queueId = queueId;
     }
 
@@ -45,11 +46,13 @@ public class RestrictDetail {
     }
 
     public Method getMethod() {
-        return method;
-    }
-
-    public Set<Annotation> getBindings() {
-        return bindings;
+        try {
+            return beanClass.getMethod(methodName, parameterTypes);
+        } catch (NoSuchMethodException ex) {
+            throw new CronProviderInitialisationException("", ex);
+        } catch (SecurityException ex) {
+            throw new CronProviderInitialisationException("", ex);
+        }
     }
 
     public String getQueueId() {

@@ -24,6 +24,7 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import org.jboss.seam.cron.api.asynchronous.Asynchronous;
+import org.jboss.seam.cron.api.asynchronous.Persistent;
 import org.jboss.seam.cron.api.queue.Queue;
 import org.jboss.seam.cron.impl.scheduling.exception.InternalException;
 import org.jboss.seam.cron.spi.SeamCronExtension;
@@ -49,7 +50,7 @@ public class AsynchronousInterceptor {
     // We need to track where the method is being invoked from so that we can
     // handle it properly.
     protected static final String INVOKED_IN_THREAD = "INVOKED_IN_THREAD";
-    public ThreadLocal<Boolean> invokedFromInterceptorInThread = new ThreadLocal<Boolean>();
+    public static  ThreadLocal<Boolean> invokedFromInterceptorInThread = new ThreadLocal<Boolean>();
     Logger log = Logger.getLogger(AsynchronousInterceptor.class);
     @Inject
     BeanManager beanMan;
@@ -80,6 +81,8 @@ public class AsynchronousInterceptor {
                 Queue queue = ctx.getMethod().getAnnotation(Queue.class);
                 String queueId = queue == null ? null : queue.value();
 
+                boolean persistent = ctx.getMethod().getAnnotation(Persistent.class) != null;
+
                 final Invoker ice = iceCopies.get();
                 ice.setInvocationContext(ctx);
                 final CronAsynchronousProvider asyncStrategy = cronExtension.getAsynchronousProvider();
@@ -87,9 +90,9 @@ public class AsynchronousInterceptor {
                 if (Future.class.isAssignableFrom(ctx.getMethod().getReturnType())) {
                     // swap the "dummy" Future for a truly asynchronous future to return to the caller immediately
                     ice.setPopResultsFromFuture(true);
-                    result = asyncStrategy.executeAndReturnFuture(queueId, ice);
+                    result = asyncStrategy.executeAndReturnFuture(queueId, persistent, ice);
                 } else {
-                    asyncStrategy.executeWithoutReturn(queueId, ice);
+                    asyncStrategy.executeWithoutReturn(queueId, persistent, ice);
                     result = null;
                 }
 

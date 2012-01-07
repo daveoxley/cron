@@ -43,7 +43,7 @@ public class CronQueueRestriction extends QueueRestriction {
 
     @Override
     protected boolean canRun(final Queue queue, final Process process) {
-        final Object instance = CdiUtils.getInstanceByType(beanManager, restrictDetail.getBeanClass(), restrictDetail.getBindings().toArray(new Annotation[] {}));
+        final Object instance = CdiUtils.getInstanceByType(beanManager, restrictDetail.getBeanClass());
 
         return process.getContainingServer().indexesWithReadLock(new ProcessIndexesCallback<Boolean>() {
 

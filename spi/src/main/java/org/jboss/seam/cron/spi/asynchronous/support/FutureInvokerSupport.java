@@ -16,6 +16,7 @@
  */
 package org.jboss.seam.cron.spi.asynchronous.support;
 
+import java.io.Serializable;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -48,7 +49,7 @@ import org.jboss.seam.cron.spi.asynchronous.Invoker;
  *
  * @author peteroyle
  */
-public class FutureInvokerSupport implements Callable {
+public class FutureInvokerSupport implements Callable, Serializable {
 
     private Invoker executor;
     private final BlockingQueue queue = new ArrayBlockingQueue(1);

@@ -26,6 +26,12 @@
             <artifactId>cdi-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.spec</groupId>
+            <artifactId>jboss-javaee-6.0</artifactId>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
         <!-- Compile-time dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>

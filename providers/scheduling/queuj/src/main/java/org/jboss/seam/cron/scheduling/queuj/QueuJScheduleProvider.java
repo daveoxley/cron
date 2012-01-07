@@ -19,7 +19,6 @@ package org.jboss.seam.cron.scheduling.queuj;
 import com.workplacesystems.queuj.Occurrence;
 import com.workplacesystems.queuj.Queue;
 import com.workplacesystems.queuj.QueueFactory;
-import com.workplacesystems.queuj.process.QueujFactory;
 import com.workplacesystems.queuj.process.java.JavaProcessBuilder;
 import org.jboss.seam.cron.spi.SeamCronExtension;
 import org.jboss.seam.cron.spi.queue.CronQueueProvider;
@@ -59,11 +58,6 @@ public class QueuJScheduleProvider implements CronProviderLifecycle, CronSchedul
      *
      */
     public void initProvider() throws CronProviderInitialisationException {
-        try {
-            QueujFactory.getProcessServer((String)null);
-        } catch (Exception ex) {
-            throw new CronProviderInitialisationException("Error initializing QueuJ scheduler", ex);
-        }
     }
 
     public void processScheduledTrigger(final String queueId, final ScheduledTriggerDetail schedTriggerDetails) throws ParseException, InternalError {

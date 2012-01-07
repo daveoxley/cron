@@ -19,7 +19,6 @@ package org.jboss.seam.cron.queue.queuj;
 import com.workplacesystems.queuj.Queue;
 import com.workplacesystems.queuj.QueueBuilder;
 import com.workplacesystems.queuj.QueueFactory;
-import com.workplacesystems.queuj.process.QueujFactory;
 import com.workplacesystems.queuj.process.java.JavaProcessBuilder;
 import java.util.HashMap;
 
@@ -52,11 +51,6 @@ public class QueuJQueueProvider implements CronProviderLifecycle, CronQueueProvi
      *
      */
     public void initProvider() throws CronProviderInitialisationException {
-        try {
-            QueujFactory.getProcessServer((String)null);
-        } catch (Exception ex) {
-            throw new CronProviderInitialisationException("Error initializing QueuJ for asynchronous method invocation", ex);
-        }
     }
 
     /**

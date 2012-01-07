@@ -14,23 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.seam.cron.spi.asynchronous;
+package org.jboss.seam.cron.api.asynchronous;
 
-import java.util.concurrent.Future;
+import java.lang.annotation.ElementType;
+import javax.inject.Qualifier;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Interface to be implemented by providers of asynchronous method invocation.
- * The provider must call the #{@literal executeInvocationContext()} method on 
- * it to cause the original method to be executed. This will also cause the
- * appropriate callback event to be fired on completion of the method invocation
- * so that the developer can respond to the result.
- * 
- * @author peteroyle
+ * Use this annotation to cause the annotated asynchronous method, or all
+ * asynchronous methods in the annotated class to be persistent.
+ *
+ * @author Dave Oxley
  */
-public interface CronAsynchronousProvider {
-
-    Future executeAndReturnFuture(final String queueId, final boolean persistent, final Invoker ice);
-
-    void executeWithoutReturn(final String queueId, final boolean persistent, final Invoker ice);
-
+@Qualifier
+@Retention(RUNTIME)
+@Target({ElementType.METHOD,
+        ElementType.TYPE
+})
+public @interface Persistent {
 }

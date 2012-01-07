@@ -18,6 +18,7 @@ package org.jboss.seam.cron.asynchronous.threads;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.RunnableFuture;
+import org.jboss.seam.cron.impl.scheduling.exception.CronProviderInitialisationException;
 import org.jboss.seam.cron.spi.asynchronous.CronAsynchronousProvider;
 import org.jboss.seam.cron.spi.asynchronous.Invoker;
 
@@ -29,14 +30,20 @@ import org.jboss.seam.cron.spi.asynchronous.Invoker;
  */
 public class ThreadsAsynchronousProvider implements CronAsynchronousProvider {
 
-    public void executeWithoutReturn(final String queueId, final Invoker invoker) {
+    public void executeWithoutReturn(final String queueId, final boolean persistent, final Invoker invoker) {
+        if (persistent)
+            throw new CronProviderInitialisationException("Persistence not supported for ThreadsAsynchronousProvider");
+
         // Execute the method in a background thread and return nothing of value to the caller.
         // They'll need to be observing an event if they want a return value.
         final RunnableFuture asyncResult = new FutureInvoker(invoker);
         new Thread(asyncResult).start();
     }
 
-    public Future executeAndReturnFuture(final String queueId, final Invoker invoker) {
+    public Future executeAndReturnFuture(final String queueId, final boolean persistent, final Invoker invoker) {
+        if (persistent)
+            throw new CronProviderInitialisationException("Persistence not supported for ThreadsAsynchronousProvider");
+
         final RunnableFuture asyncResult = new FutureInvoker(invoker);
         new Thread(asyncResult).start();
         return asyncResult;
